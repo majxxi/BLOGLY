@@ -2,7 +2,7 @@
 
 from flask import Flask, request, render_template, redirect
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly'
@@ -95,3 +95,64 @@ def delete_user(id):
     db.session.commit()
 
     return redirect('/users')
+
+@app.route('/users/<int:id>/posts/new') 
+def show_post_form(id):
+    """ Show the post form """
+
+    user = User.query.get(id)
+
+    return render_template('post_form.html', user=user, user_id=id)
+
+@app.route('/users/<int:id>/posts/new', methods=["POST"])
+def handle_post_form(id):
+    """ Handle the form data to append into Posts table 
+        and redirect to the user's profile """
+
+    post_title = request.form['title']
+    post_content = request.form['content']
+
+    new_post = Post(title=post_title, 
+                    content=post_content,
+                    user_id=id)
+
+    db.session.add(new_post)
+    db.session.commit()
+
+    return redirect(f'/users/{id}')
+
+
+@app.route('/posts/<int:post_id>')
+def show_post(post_id):
+    """ Show the post """
+
+    post = Post.query.get(post_id)
+
+    return render_template('post.html', post=post)
+
+@app.route('/posts/<int:post_id>/edit')
+def show_edit_post_form(post_id):
+    """ Show the edit form """
+
+    return render_template('post_edit.html', post_id=post_id)
+
+@app.route('/posts/<int:post_id>/edit', methods=["POST"])
+def handle_post_edit(post_id):
+    """ Handle the post edit form and update the Posts table """
+
+    # Add to the posts table 
+    # commit
+
+    return redirect(f'/posts/{post_id}')
+
+@app.route('/posts/<int:post_id>/delete', methods=["POST"])
+def delete_post(post_id):
+    """ Delete the post from the Posts table """
+
+    # Add to the posts table 
+    # commit
+
+    return redirect('/users')
+
+
+

@@ -1,5 +1,6 @@
 """Models for Blogly."""
 from flask_sqlalchemy import SQLAlchemy
+import datetime
 
 db = SQLAlchemy()
 
@@ -15,7 +16,7 @@ class User(db.Model):
     __tablename__: 'User'
 
     def __repr__(self):
-        """ Show info about pet. """
+        """ Show info about user. """
         user = self
         print(f"<User {user.first_name}, {user.last_name}, {user.id}, {user.image_url}>")
 
@@ -35,17 +36,18 @@ class User(db.Model):
 
 class Post(db.Model):
 
+    __tablename__: 'posts'
+
     def __repr__(self):
+        """ Show info about post. """
 
         post = self
         print(f"<Post {post.post_id}, {post.title}, {post.created_at}, {post.user_id} >")
-
-    __tablename__: 'posts'
 
     post_id = db.Column(db.Integer, primary_key = True, autoincrement = True)
     title = db.Column(db.String(21), nullable = False)
     content = db.Column(db.String(500), nullable = True)
     created_at = db.Column(db.DateTime, nullable = False, default=datetime.datetime.now)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
-    user = db.relationship('User', backref='posts')
+    # user = db.relationship('user', backref='posts')
