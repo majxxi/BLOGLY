@@ -134,14 +134,21 @@ def show_post(post_id):
 def show_edit_post_form(post_id):
     """ Show the edit form """
 
-    return render_template('post_edit.html', post_id=post_id)
+    post = Post.query.get(post_id)
+    
+    return render_template('post_edit.html', post=post)
 
 @app.route('/posts/<int:post_id>/edit', methods=["POST"])
 def handle_post_edit(post_id):
     """ Handle the post edit form and update the Posts table """
 
-    # Add to the posts table 
-    # commit
+    post = Post.query.get(post_id)
+
+    post.title = request.form['title']
+    post.content = request.form['content']
+
+    db.session.add(post)
+    db.session.commit()
 
     return redirect(f'/posts/{post_id}')
 
@@ -149,10 +156,8 @@ def handle_post_edit(post_id):
 def delete_post(post_id):
     """ Delete the post from the Posts table """
 
-    # Add to the posts table 
-    # commit
+    post = Post.query.get(post_id)
+    db.session.delete(post)
+    db.session.commit()
 
     return redirect('/users')
-
-
-
